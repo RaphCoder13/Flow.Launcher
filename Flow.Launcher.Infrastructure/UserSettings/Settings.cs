@@ -622,7 +622,18 @@ namespace Flow.Launcher.Infrastructure.UserSettings
                 new($"{OpenResultModifiers}+D7", "HotkeyOpenResultN", 7),
                 new($"{OpenResultModifiers}+D8", "HotkeyOpenResultN", 8),
                 new($"{OpenResultModifiers}+D9", "HotkeyOpenResultN", 9),
-                new($"{OpenResultModifiers}+D0", "HotkeyOpenResultN", 10)
+                new($"{OpenResultModifiers}+D0", "HotkeyOpenResultN", 10),
+                // Add support for NumPad keys
+                new($"{OpenResultModifiers}+NumPad1", "HotkeyOpenResultN", 1),
+                new($"{OpenResultModifiers}+NumPad2", "HotkeyOpenResultN", 2),
+                new($"{OpenResultModifiers}+NumPad3", "HotkeyOpenResultN", 3),
+                new($"{OpenResultModifiers}+NumPad4", "HotkeyOpenResultN", 4),
+                new($"{OpenResultModifiers}+NumPad5", "HotkeyOpenResultN", 5),
+                new($"{OpenResultModifiers}+NumPad6", "HotkeyOpenResultN", 6),
+                new($"{OpenResultModifiers}+NumPad7", "HotkeyOpenResultN", 7),
+                new($"{OpenResultModifiers}+NumPad8", "HotkeyOpenResultN", 8),
+                new($"{OpenResultModifiers}+NumPad9", "HotkeyOpenResultN", 9),
+                new($"{OpenResultModifiers}+NumPad0", "HotkeyOpenResultN", 10)
             };
         }
     }

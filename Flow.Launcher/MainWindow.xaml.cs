@@ -98,8 +98,95 @@ namespace Flow.Launcher
 
             SyncSoundEffectsState();
             RegisterSoundEffectsEvent();
+            // Set input bindings for numeric keys
+            UpdateInputBindings();
             DataObject.AddPastingHandler(QueryTextBox, QueryTextBox_OnPaste);
             _viewModel.ActualApplicationThemeChanged += ViewModel_ActualApplicationThemeChanged;
+        }
+
+        #endregion
+
+        #region UpdateInputBindings (RDB)
+        private void UpdateInputBindings()
+        {
+
+            for (int i = InputBindings.Count - 1; i >= 0; i--)
+            {
+                InputBinding binding = InputBindings[i];
+                if (binding is KeyBinding kb)
+                    if (kb.Command == _viewModel.OpenResultCommand && (kb.Key.ToString().StartsWith("D") || kb.Key.ToString().StartsWith("NumPad")))
+                        InputBindings.RemoveAt(i);
+            }
+
+
+            for (int i = 0; i <= 9; i++)
+            {
+                InputBindings.Add(new KeyBinding(_viewModel.OpenResultCommand, (Key)Enum.Parse(typeof(Key), $"D{i}"), ParseModifierKeys(_viewModel.OpenResultCommandModifiers) | ModifierKeys.Shift)
+                {
+                    CommandParameter = ((i + 9) % 10).ToString()
+                });
+            }
+            for (int i = 0; i <= 9; i++)
+            {
+                InputBindings.Add(new KeyBinding(_viewModel.OpenResultCommand, (Key)Enum.Parse(typeof(Key), $"NumPad{i}"), ParseModifierKeys(_viewModel.OpenResultCommandModifiers))
+                {
+                    CommandParameter = ((i + 9) % 10).ToString()
+
+                });
+            }
+        }
+
+        private ModifierKeys ParseModifierKeys(string modifierKeys)
+        {
+            if (string.IsNullOrEmpty(modifierKeys))
+                return 0;
+
+            if (modifierKeys.Contains("+"))
+            {
+                string[] parts = modifierKeys.Split('+');
+                ModifierKeys modifiers = 0;
+
+                foreach (string part in parts)
+                {
+                    ModifierKeys modifier = GetModifierKey(part.Trim());
+                    modifiers |= modifier;
+                }
+
+                return modifiers;
+            }
+            else
+            {
+                return GetModifierKey(modifierKeys.Trim());
+            }
+        }
+
+        private ModifierKeys GetModifierKey(string key)
+        {
+            switch (key.ToLower())
+            {
+                case "ctrl":
+                    return ModifierKeys.Control;
+                case "shift":
+                    return ModifierKeys.Shift;
+                case "alt":
+                    return ModifierKeys.Alt;
+                default:
+                    return (ModifierKeys)Enum.Parse(typeof(ModifierKeys), key);
+            }
+        }
+
+        private ModifierKeys ParseModifierKeys0(string modifierKeys)
+        {
+            string[] parts = modifierKeys.Split('+');
+            ModifierKeys modifiers = 0;
+
+            foreach (string part in parts)
+            {
+                ModifierKeys modifier = (ModifierKeys)Enum.Parse(typeof(ModifierKeys), part.Trim());
+                modifiers |= modifier;
+            }
+
+            return modifiers;
         }
 
         #endregion
@@ -476,7 +563,7 @@ namespace Flow.Launcher
                     break;
                 case Key.Right:
                     if (_viewModel.QueryResultsSelected()
-                        && QueryTextBox.CaretIndex == QueryTextBox.Text.Length)            
+                        && QueryTextBox.CaretIndex == QueryTextBox.Text.Length)
                     {
                         _viewModel.LoadContextMenuCommand.Execute(null);
                         e.Handled = true;
@@ -609,7 +696,7 @@ namespace Flow.Launcher
 
         #region Window WndProc
 
-        private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled) 
+        private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
             switch (msg)
             {
@@ -1152,13 +1239,13 @@ namespace Flow.Launcher
                 To = ProgressBar.ActualWidth,
                 Duration = animationDuration
             };
-            
+
             Storyboard.SetTarget(lineEndAnimation, ProgressBar);
             Storyboard.SetTargetProperty(lineEndAnimation, new PropertyPath("(Line.X2)"));
-            
+
             Storyboard.SetTarget(lineStartAnimation, ProgressBar);
             Storyboard.SetTargetProperty(lineStartAnimation, new PropertyPath("(Line.X1)"));
-            
+
             _progressBarStoryboard.Children.Add(lineEndAnimation);
             _progressBarStoryboard.Children.Add(lineStartAnimation);
             _progressBarStoryboard.RepeatBehavior = RepeatBehavior.Forever;
